@@ -72,8 +72,8 @@ fn main() {
         .from_path(output_fname)
         .unwrap();
 
-    // Write headers
-    wtr.write_record(headers.iter()).unwrap();
+    // Write headers row
+    //wtr.write_record(headers.iter()).unwrap();
 
     // Write records
     for record in records {
