@@ -1,10 +1,19 @@
 /*
 
+#[derive(Debug, Deserialize)]
+struct MyRecord {
+    #[serde(rename = "Latitude")]
+    latitude: f64,
+    #[serde(rename = "TheState")]
+    state: String,
+}
+
+---
 cargo build --release
 cargo run --release
 */
 use csv::{ReaderBuilder,WriterBuilder};
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::env;
 
 #[derive(Debug, Deserialize, Serialize)]
