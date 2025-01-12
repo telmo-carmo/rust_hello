@@ -3,11 +3,11 @@
 cargo build --release
 cargo run --release
 */
-use csv::ReaderBuilder;
-use serde_derive::Deserialize;
+use csv::{ReaderBuilder,WriterBuilder};
+use serde_derive::{Deserialize, Serialize};
 use std::env;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct Cli1 {
     id: u32,
     name: String,
@@ -40,12 +40,12 @@ fn main() {
         .from_path(fname)
         .unwrap();
 
-    let headers = rdr.headers().unwrap();
+    let headers = rdr.headers().unwrap().clone();
     println!("Headers {:?}", headers);
 
     let mut rn = 1;
     let mut records: Vec<Cli1> = Vec::new();
- 
+
     // Read records from the CSV file
     for result in rdr.deserialize() {
         // Process the record
@@ -55,22 +55,22 @@ fn main() {
         rn += 1;
     }
 
- // Create a CSV writer
- let output_fname = "output.csv";
- let mut wtr = WriterBuilder::new()
-     .delimiter(b';') // Adjust delimiter as needed
-     .has_headers(true) // Explicitly indicate header presence
-     .from_path(output_fname)
-     .unwrap();
+    // Create a CSV writer
+    let output_fname = "output.csv";
+    let mut wtr = WriterBuilder::new()
+        .delimiter(b';') // Adjust delimiter as needed
+        .has_headers(true) // Explicitly indicate header presence
+        .from_path(output_fname)
+        .unwrap();
 
- // Write headers
- wtr.write_record(headers.iter()).unwrap();
+    // Write headers
+    wtr.write_record(headers.iter()).unwrap();
 
- // Write records
- for record in records {
-     wtr.serialize(record).unwrap();
- }
+    // Write records
+    for record in records {
+        wtr.serialize(record).unwrap();
+    }
 
- wtr.flush().unwrap();
- println!("Data written to {}", output_fname);
+    wtr.flush().unwrap();
+    println!("Data written to {}", output_fname);
 }
