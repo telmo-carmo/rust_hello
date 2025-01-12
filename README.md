@@ -37,7 +37,7 @@ use rust_xlsxwriter::*;
 fn main() -> Result<(), XlsxError> {
     // Create a new Excel file
     let mut workbook = Workbook::new();
-    let mut worksheet = workbook.add_worksheet();
+    let mut worksheet = workbook.add_worksheet(); // workbook.add_worksheet().set_name("Pane 1")?;
 
     // Create a bold format
     let bold = Format::new().set_bold();
@@ -59,6 +59,7 @@ fn main() -> Result<(), XlsxError> {
     worksheet.write(1, 2, Formula::new("=A1+B1"))?; 
 
     workbook.save("demo.xlsx")?;
+    // let buf : Vec<u8>  = workbook.save_to_buffer()?;  // to stream buffer
 
     Ok(())
 }
