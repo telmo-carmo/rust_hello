@@ -12,7 +12,7 @@ struct MyRecord {
 cargo build --release
 cargo run --release
 */
-use csv::{ReaderBuilder,WriterBuilder};
+use csv::{ReaderBuilder, WriterBuilder};
 use serde::{Deserialize, Serialize};
 use std::env;
 
