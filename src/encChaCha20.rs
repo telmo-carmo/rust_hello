@@ -48,7 +48,7 @@ fn main() {
     let mut rng = rand::rng();
     let mut iv = [0u8; 24];
     rng.fill_bytes(&mut iv);
-    println!("IV: {}",&base64::encode(iv));
+    println!("Rnd IV: {}",&base64::encode(iv));
 
     // crate hex :  hex::decode("aabb")  or hex_to_bytes()
     //  32by , 256-bit key :
