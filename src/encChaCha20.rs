@@ -48,7 +48,8 @@ fn main() {
     let mut rng = rand::rng();
     let mut iv = [0u8; 24];
     rng.fill_bytes(&mut iv);
-    println!("Rnd IV: {}",&base64::encode(iv));
+    let iv_b64 = &base64::encode(iv);
+    println!("Rnd IV: {}",&iv_b64);
 
     // crate hex :  hex::decode("aabb")  or hex_to_bytes()
     //  32by , 256-bit key :
@@ -61,6 +62,9 @@ fn main() {
     let ciphertext = encrypt_string(plaintext, &key, &iv);
     println!("Ciphertext: {}", &ciphertext); // Print the ciphertext (bytes) in b64
 
+    let iv_vec = base64::decode(iv_b64).expect("b64 IV str");
+    let mut iv = [0u8; 24];
+    iv.copy_from_slice(&iv_vec);
     let decrypted_text = decrypt_string(&ciphertext, &key, &iv);
 
     println!("Decrypted text: {}", decrypted_text); // Print the decrypted string
