@@ -70,4 +70,24 @@ fn main() {
     println!("Decrypted text: {}", decrypted_text); // Print the decrypted string
 
     assert_eq!(plaintext, decrypted_text); // Ensure that decryption worked correctly
+
+    let s1 = "2023.02.03";
+
+    // semantic Version packing:  if ver 1 > ver2 {}
+    let parts: Vec<&str> = s1.split('.').collect();
+    if parts.len() == 3 {
+        let year: u16 = parts[0].parse().expect("Invalid year");
+        let month: u8 = parts[1].parse().expect("Invalid month");
+        let day: u8 = parts[2].parse().expect("Invalid day");
+
+        let mut ver_bytes = [0u8; 4];
+        ver_bytes[0..2].copy_from_slice(&year.to_be_bytes());
+        ver_bytes[2] = month;
+        ver_bytes[3] = day;
+
+        let ver_packed = u32::from_be_bytes(ver_bytes);
+        println!("Packed version: {} - 0x{:X}", ver_packed, ver_packed);
+    } else {
+        println!("Invalid date format");
+    }
 }
