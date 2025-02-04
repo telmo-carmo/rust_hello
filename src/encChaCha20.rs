@@ -1,3 +1,7 @@
+/*
+using a stream cypher for strings
+
+*/
 use chacha20::cipher::{KeyIvInit, StreamCipher};
 use chacha20::XChaCha20;
 use rand::RngCore;
