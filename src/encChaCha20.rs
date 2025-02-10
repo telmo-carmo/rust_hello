@@ -16,7 +16,7 @@ fn encrypt_string(plaintext: &str, key: &[u8; 32]) -> String {
     let mut rng = rand::rng();
     let mut iv = [0u8; 24];
     rng.fill_bytes(&mut iv);
-    // Create cipher instance
+    // Create cipher instance Key 256 bits, Nonce 192 bits
     let mut cipher = XChaCha20::new(key.into(), &iv.into());
 
     // Convert plaintext to bytes
