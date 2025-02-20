@@ -4,6 +4,12 @@ use pico_args::Arguments;
 parsing command line args example app
 
 cargo add pico-args
+
+OR
+
+[dependencies]
+pico-args = { version = "0.5", features = ["eq-separator"] } 
+
 */
 
 const HELP_MSG: &str = "\
