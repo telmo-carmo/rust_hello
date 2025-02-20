@@ -8,7 +8,9 @@ cargo add pico-args
 OR
 
 [dependencies]
-pico-args = { version = "0.5", features = ["eq-separator"] } 
+pico-args = { version = "0.5", features = ["eq-separator"] }   
+
+feature "combined-flags"  allows -abc instead of -a -b -c
 
 */
 
