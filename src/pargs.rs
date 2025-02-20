@@ -1,6 +1,5 @@
-use pico_args::Arguments;
-
 /*
+
 parsing command line args example app
 
 cargo add pico-args
@@ -14,8 +13,10 @@ feature "combined-flags"  allows -abc instead of -a -b -c
 
 */
 
+use pico_args::Arguments;
+
 const HELP_MSG: &str = "\
-App XX version 1.0.1
+App XX version 1.2
 
 USAGE:
   app [OPTIONS] -t NUM  [INPUT]
@@ -67,6 +68,6 @@ fn main() {
     println!("Bool argument: {}", vf);
     if !remaining_args.is_empty() {
         println!("Remaining arguments: {:?}", remaining_args);
-        println!("INPUT = {}", remaining_args[0].to_str().unwrap());
+        println!("INPUT_1 = {}", remaining_args[0].to_str().unwrap());
     }
 }
