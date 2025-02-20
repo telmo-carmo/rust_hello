@@ -11,16 +11,15 @@ const HELP_MSG: &str = "\
 App
 
 USAGE:
-  app [OPTIONS] --number NUMBER [INPUT]
+  app [OPTIONS] [INPUT]
 
 FLAGS:
   -h, --help            Prints help information
 
 OPTIONS:
-  --num NUMBER       Sets a number
-  --opt-number NUMBER   Sets an optional number
-  --width WIDTH         Sets width [default: 10]
-  --output PATH         Sets an output path
+  -n | --num NUMBER     Sets an optional number [default: 0]
+  -s | --str  STRING    Sets an optional str
+  -v                    Sets verbose flag
 
 ARGS:
   <INPUT>
@@ -34,10 +33,10 @@ fn main() {
         std::process::exit(0);
     }
 
-    let nv: i32 = pargs.opt_value_from_str("--num").unwrap().unwrap_or(0);
+    let nv: i32 = pargs.opt_value_from_str(["-n","--num"]).unwrap().unwrap_or(0);
 
     let name: String = pargs
-        .opt_value_from_str("--str")
+        .opt_value_from_str(["-s","--str"])
         .unwrap()
         .unwrap_or_else(|| "None".to_string());
 
@@ -49,5 +48,7 @@ fn main() {
     println!("Bool argument: {}", vf);
     if !remaining_args.is_empty() {
         println!("Remaining arguments: {:?}", remaining_args);
+        println!("INPUT = {}", remaining_args[0].to_str().unwrap());
     }
 }
+
