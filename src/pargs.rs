@@ -7,19 +7,19 @@ cargo add pico-args
 */
 
 const HELP_MSG: &str = "\
-App
+App XX version 1.0.1
 
 USAGE:
   app [OPTIONS] -t NUM  [INPUT]
 
 FLAGS:
-  -h, --help            Prints help information
+  -h, --help           Prints help information
 
 OPTIONS:
-  -t NUMBER             Sets a number
+  -t NUMBER            Sets a number
   -n. --num NUMBER     Sets an optional number [default: 0]
-  -s, --str  STRING    Sets an optional str
-  -v                    Sets verbose flag
+  -s, --str STRING     Sets an optional str
+  -v                   Sets verbose flag
 
 ARGS:
   <INPUT>
