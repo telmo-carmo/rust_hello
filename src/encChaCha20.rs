@@ -51,15 +51,14 @@ fn main() {
         "This is a Very secret message!"
     };
 
-    const KEY_HEX : &str = "3AF5f3d48ca94da0c57dd5062b86a0cd19f83cf48b566cee276f29a82c7f1537";
+    const KEY_HEX: &str = "3AF5f3d48ca94da0c57dd5062b86a0cd19f83cf48b566cee276f29a82c7f1537";
 
     // crate hex :  hex::decode("aabb")  or hex_to_bytes()
     //  32by , 256-bit key :
     let key_vec = hex::decode(KEY_HEX).expect("bad hex str");
-   
+
     let mut key = [0u8; 32];
     key.copy_from_slice(&key_vec);
-  
 
     let ciphertext = encrypt_string(plaintext, &key);
     println!("Ciphertext: {}", &ciphertext); // Print the ciphertext (bytes) in b64
