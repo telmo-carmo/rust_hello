@@ -6,17 +6,17 @@ parsing command line args example app
 cargo add pico-args
 */
 
-
 const HELP_MSG: &str = "\
 App
 
 USAGE:
-  app [OPTIONS] [INPUT]
+  app [OPTIONS] -t NUM  [INPUT]
 
 FLAGS:
   -h, --help            Prints help information
 
 OPTIONS:
+  -t NUMBER             Sets a number
   -n | --num NUMBER     Sets an optional number [default: 0]
   -s | --str  STRING    Sets an optional str
   -v                    Sets verbose flag
@@ -33,10 +33,21 @@ fn main() {
         std::process::exit(0);
     }
 
-    let nv: i32 = pargs.opt_value_from_str(["-n","--num"]).unwrap().unwrap_or(0);
+    match pargs.value_from_str::<&str, i32>("-t") {
+        Ok(t ) => println!("arg -t = {}", t),
+        Err(e) => {
+            eprintln!("{} - Missing -t arg", e);
+            std::process::exit(1);
+        }
+    }
+
+    let nv: i32 = pargs
+        .opt_value_from_str(["-n", "--num"])
+        .unwrap()
+        .unwrap_or(0);
 
     let name: String = pargs
-        .opt_value_from_str(["-s","--str"])
+        .opt_value_from_str(["-s", "--str"])
         .unwrap()
         .unwrap_or_else(|| "None".to_string());
 
@@ -51,4 +62,3 @@ fn main() {
         println!("INPUT = {}", remaining_args[0].to_str().unwrap());
     }
 }
-
