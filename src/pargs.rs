@@ -17,8 +17,8 @@ FLAGS:
 
 OPTIONS:
   -t NUMBER             Sets a number
-  -n | --num NUMBER     Sets an optional number [default: 0]
-  -s | --str  STRING    Sets an optional str
+  -n. --num NUMBER     Sets an optional number [default: 0]
+  -s, --str  STRING    Sets an optional str
   -v                    Sets verbose flag
 
 ARGS:
