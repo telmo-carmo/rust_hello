@@ -4,3 +4,4 @@
 output.csv
 Cargo.lock
 *.log
+/.idea
