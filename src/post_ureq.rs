@@ -25,7 +25,7 @@ let response: String = agent.put("https://jsonplaceholder.typicode.com/posts/1')
 */
 
 use serde::{Deserialize, Serialize};
-use ureq;
+
 
 #[derive(Serialize, Deserialize, Debug)]
 struct MyUser {
@@ -53,7 +53,7 @@ fn main() {
 
     let pdata = serde_json::to_string(&new_user).unwrap();
 
-    println!("POST toz{url}");
+    println!("POST to {url}");
     let response = ureq::post(url)
         .content_type("application/json; charset=utf-8")
         .send(pdata);
@@ -61,8 +61,8 @@ fn main() {
     match response {
         Ok(mut resp) => {
             let output_body = resp.body_mut().read_to_string().unwrap();
-            println!("Text response: {}", output_body);
-            let u2: MyUser = serde_json::from_str(&output_body.as_str()).expect("a JSON resp str");
+            println!("Text response: {}", &output_body);
+            let u2: MyUser = serde_json::from_str(output_body.as_str()).expect("a JSON resp str");
             println!("Obj response: {:?}", &u2);
         }
         Err(error) => {
