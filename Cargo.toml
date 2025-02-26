@@ -15,6 +15,7 @@ rand = "0.9"
 base64 = "0.22"
 hex = "0.4"
 pico-args = "0.5"
+ureq = "3.0"
 
 [[bin]]
 name = "encChaCha20"
@@ -23,3 +24,7 @@ path = "src/encChaCha20.rs"
 [[bin]]
 name = "pargs"
 path = "src/pargs.rs"
+
+[[bin]]
+name = "post_ureq"
+path = "src/post_ureq.rs"

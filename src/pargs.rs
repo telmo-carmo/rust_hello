@@ -7,7 +7,7 @@ cargo add pico-args
 OR
 
 [dependencies]
-pico-args = { version = "0.5", features = ["eq-separator"] }   
+pico-args = { version = "0.5", features = ["eq-separator"] }
 
 feature "combined-flags"  allows -abc instead of -a -b -c
 
@@ -43,7 +43,7 @@ fn main() {
     }
 
     match pargs.value_from_str::<&str, i32>("-t") {
-        Ok(t ) => println!("arg -t = {}", t),
+        Ok(t) => println!("arg -t = {}", t),
         Err(e) => {
             eprintln!("{} - Missing -t arg", e);
             std::process::exit(1);
