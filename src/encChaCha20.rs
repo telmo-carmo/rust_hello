@@ -1,7 +1,6 @@
-use base64::{engine::general_purpose::STANDARD, Engine as _};
-use chacha20::cipher::{KeyIvInit, StreamCipher};
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use chacha20::XChaCha20;
-use rand::RngCore;
+use chacha20::cipher::{KeyIvInit, StreamCipher};
 
 // fn hex_to_bytes(str_hex: &str) -> Vec<u8> {
 //     let mut bytes = Vec::new();
@@ -13,6 +12,7 @@ use rand::RngCore;
 // }
 
 fn encrypt_string(plaintext: &str, key: &[u8; 32]) -> String {
+    use rand::prelude::*;
     let mut rng = rand::rng();
     let mut iv = [0u8; 24];
     rng.fill_bytes(&mut iv);

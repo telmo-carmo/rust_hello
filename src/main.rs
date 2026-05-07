@@ -10,7 +10,9 @@ struct MyRecord {
 
 ---
 cargo build --release
-cargo run --release
+cargo run --release --bin ru_hello
+
+
 */
 use csv::{ReaderBuilder, WriterBuilder};
 use serde::{Deserialize, Serialize};
@@ -69,7 +71,7 @@ fn main() {
     let mut wtr = WriterBuilder::new()
         .delimiter(b';') // Adjust delimiter as needed
         .has_headers(true) // Explicitly indicate header presence
-        .from_path(output_fname)
+        .from_path(output_fname)    // .terminator(csv::Terminator::Any(b'\n'))  // Set terminator to Unix-style Line Feed (\n)
         .unwrap();
 
     // Write headers row
@@ -80,6 +82,7 @@ fn main() {
         wtr.serialize(record).unwrap();
     }
 
+    // Always flush the internal buffer to ensure all data is written
     wtr.flush().unwrap();
     println!("Data written to {}", output_fname);
 }

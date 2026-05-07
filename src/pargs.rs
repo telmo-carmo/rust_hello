@@ -65,7 +65,7 @@ fn main() {
 
     println!("Integer argument: {}", nv);
     println!("String argument: {}", name);
-    println!("Bool argument: {}", vf);
+    println!("Bool -v argument: {}", vf);
     if !remaining_args.is_empty() {
         println!("Remaining arguments: {:?}", remaining_args);
         println!("INPUT_1 = {}", remaining_args[0].to_str().unwrap());
