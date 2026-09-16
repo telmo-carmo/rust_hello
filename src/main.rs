@@ -71,7 +71,7 @@ fn main() {
     let mut wtr = WriterBuilder::new()
         .delimiter(b';') // Adjust delimiter as needed
         .has_headers(true) // Explicitly indicate header presence
-        .from_path(output_fname)    // .terminator(csv::Terminator::Any(b'\n'))  // Set terminator to Unix-style Line Feed (\n)
+        .from_path(output_fname) // .terminator(csv::Terminator::Any(b'\n'))  // Set terminator to Unix-style Line Feed (\n)
         .unwrap();
 
     // Write headers row

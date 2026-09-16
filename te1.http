@@ -1,0 +1,12 @@
+
+###
+POST https://jsonplaceholder.typicode.com/posts
+Content-Type: application/json
+
+{
+  "title": "foo",
+  "body": "bar",
+  "userId": {{$randomInt 10 1000}}
+}
+
+###

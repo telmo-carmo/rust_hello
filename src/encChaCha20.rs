@@ -9,8 +9,8 @@ cargo run --release --bin encChaCha20 -- "Era uma vez um gato maltês"
 
 */
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
+use chacha20poly1305::ChaCha20Poly1305;
 use chacha20poly1305::aead::{Aead, KeyInit};
-use chacha20poly1305::{ChaCha20Poly1305};
 use rand::Rng;
 use x25519_dalek::{PublicKey, StaticSecret};
 
@@ -95,11 +95,19 @@ fn main() {
     let bob_shared_key = derive_shared_key(&bob.private_key, &alice.public_key);
     assert_eq!(alice_shared_key, bob_shared_key);
 
-    println!("Shared key length: {} ; key= {}\n", alice_shared_key.len(), URL_SAFE_NO_PAD.encode(alice_shared_key));
+    println!(
+        "Shared key length: {} ; key= {}\n",
+        alice_shared_key.len(),
+        URL_SAFE_NO_PAD.encode(alice_shared_key)
+    );
 
     let ciphertext = encrypt_string(&plaintext, &alice_shared_key);
     println!("Ciphertext: {ciphertext}");
-    println!("Plaintext length: {}; Ciphertext B64 length: {};", plaintext.len(), ciphertext.len());
+    println!(
+        "Plaintext length: {}; Ciphertext B64 length: {};",
+        plaintext.len(),
+        ciphertext.len()
+    );
 
     let decrypted_text = decrypt_string(&ciphertext, &bob_shared_key);
     println!("Decrypted text: {decrypted_text}");
