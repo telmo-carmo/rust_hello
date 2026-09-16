@@ -10,7 +10,7 @@ cargo run --release --bin encChaCha20 -- "Era uma vez um gato maltês"
 */
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use chacha20poly1305::aead::{Aead, KeyInit};
-use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce};
+use chacha20poly1305::{ChaCha20Poly1305};
 use rand::Rng;
 use x25519_dalek::{PublicKey, StaticSecret};
 
@@ -38,11 +38,11 @@ fn derive_shared_key(private_key: &StaticSecret, peer_public_key: &PublicKey) ->
 }
 
 fn encrypt_string(plaintext: &str, key_bytes: &[u8; 32]) -> String {
-    let cipher = ChaCha20Poly1305::new(Key::from_slice(key_bytes));
+    let cipher = ChaCha20Poly1305::new(key_bytes.into());
 
     let mut nonce_bytes = [0u8; 12];
     rand::rng().fill_bytes(&mut nonce_bytes);
-    let nonce = Nonce::from_slice(&nonce_bytes);
+    let nonce = &nonce_bytes.into();
 
     let ciphertext = cipher
         .encrypt(nonce, plaintext.as_bytes())
@@ -61,9 +61,11 @@ fn decrypt_string(ciphertext_b64: &str, key_bytes: &[u8; 32]) -> String {
     let (nonce_bytes, ciphertext) = payload
         .split_at_checked(12)
         .expect("ciphertext is missing its nonce");
-    let cipher = ChaCha20Poly1305::new(Key::from_slice(key_bytes));
+
+    let nonce: &[u8; 12] = nonce_bytes.try_into().expect("nonce has incorrect length");
+    let cipher = ChaCha20Poly1305::new(key_bytes.into());
     let plaintext = cipher
-        .decrypt(Nonce::from_slice(nonce_bytes), ciphertext)
+        .decrypt(nonce.into(), ciphertext)
         .expect("decryption failed: wrong key or modified ciphertext");
 
     String::from_utf8(plaintext).expect("decrypted data is not valid UTF-8")
