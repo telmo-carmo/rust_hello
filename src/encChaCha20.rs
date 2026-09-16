@@ -1,3 +1,13 @@
+/*
+Uses a A pure-Rust implementation of x25519 elliptic curve Diffie-Hellman key exchange, with curve operations provided by curve25519-dalek.
+
+and ChaCha20Poly1305 for symmetric  encryption of messages.
+
+---
+
+cargo run --release --bin encChaCha20 -- "Era uma vez um gato maltês"
+
+*/
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
 use chacha20poly1305::aead::{Aead, KeyInit};
 use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce};
