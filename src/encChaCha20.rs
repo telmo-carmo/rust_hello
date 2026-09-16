@@ -1,89 +1,96 @@
 use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
-use chacha20::ChaCha20;
-use chacha20::cipher::{KeyIvInit, StreamCipher};
+use chacha20poly1305::aead::{Aead, KeyInit};
+use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce};
+use rand::Rng;
+use x25519_dalek::{PublicKey, StaticSecret};
 
-// fn hex_to_bytes(str_hex: &str) -> Vec<u8> {
-//     let mut bytes = Vec::new();
-//     for i in (0..str_hex.len()).step_by(2) {
-//         let byte = u8::from_str_radix(&str_hex[i..i + 2], 16).expect("Invalid hex string");
-//         bytes.push(byte);
-//     }
-//     bytes
-// }
-
-fn encrypt_string(plaintext: &str, key: &[u8; 32]) -> String {
-    use rand::prelude::*;
-    let mut rng = rand::rng();
-    let mut iv = [ 0x24 ; 12]; //[0u8; 24];
-    rng.fill_bytes(&mut iv);
-    // Create cipher instance Key 256 bits, Nonce 192 bits
-    let mut cipher = ChaCha20::new(key.into(), &iv.into());
-
-    // Convert plaintext to bytes
-    let mut ciphertext = plaintext.as_bytes().to_vec();
-
-    // Encrypt the data in-place
-    cipher.apply_keystream(&mut ciphertext);
-    let mut result = iv.to_vec();
-    result.extend(ciphertext);
-    URL_SAFE_NO_PAD.encode(&result)
+struct KeyPair {
+    private_key: StaticSecret,
+    public_key: PublicKey,
 }
 
-fn decrypt_string(ciphertext_b64: &str, key: &[u8; 32]) -> String {
-    let vby = URL_SAFE_NO_PAD.decode(ciphertext_b64).expect("bad base64 string");
-    let civ = &vby[..12];
-    let ctext = &vby[12..];
-    let mut iv = [ 0x24 ; 12]; 
-    iv.copy_from_slice(civ);
+fn generate_key_pair() -> KeyPair {
+    let mut private_bytes = [0u8; 32];
+    rand::rng().fill_bytes(&mut private_bytes);
 
-    // Create cipher instance (same key and IV as encryption)
-    let mut cipher = ChaCha20::new(key.into(), &iv.into());
-    let mut plaintext = ctext.to_vec();
-    // Decrypt the data in-place
-    cipher.apply_keystream(&mut plaintext);
+    let private_key = StaticSecret::from(private_bytes);
+    let public_key = PublicKey::from(&private_key);
 
-    // Convert the decrypted bytes back to a String.  Handle potential errors.
-    String::from_utf8(plaintext).unwrap_or_else(|e| panic!("Invalid UTF-8: {}", e))
+    KeyPair {
+        private_key,
+        public_key,
+    }
 }
 
-fn gen_key_pair() -> String {
-    use rand::prelude::*;
-    let mut rng = rand::rng();
-    let mut key = [0u8; 32];
-    rng.fill_bytes(&mut key);
-    URL_SAFE_NO_PAD.encode(&key)
+fn derive_shared_key(private_key: &StaticSecret, peer_public_key: &PublicKey) -> [u8; 32] {
+    let shared_secret = private_key.diffie_hellman(peer_public_key);
+    *shared_secret.as_bytes()
+}
+
+fn encrypt_string(plaintext: &str, key_bytes: &[u8; 32]) -> String {
+    let cipher = ChaCha20Poly1305::new(Key::from_slice(key_bytes));
+
+    let mut nonce_bytes = [0u8; 12];
+    rand::rng().fill_bytes(&mut nonce_bytes);
+    let nonce = Nonce::from_slice(&nonce_bytes);
+
+    let ciphertext = cipher
+        .encrypt(nonce, plaintext.as_bytes())
+        .expect("encryption failed");
+
+    let mut payload = nonce_bytes.to_vec();
+    payload.extend_from_slice(&ciphertext);
+    URL_SAFE_NO_PAD.encode(payload)
+}
+
+fn decrypt_string(ciphertext_b64: &str, key_bytes: &[u8; 32]) -> String {
+    let payload = URL_SAFE_NO_PAD
+        .decode(ciphertext_b64)
+        .expect("invalid Base64 ciphertext");
+
+    let (nonce_bytes, ciphertext) = payload
+        .split_at_checked(12)
+        .expect("ciphertext is missing its nonce");
+    let cipher = ChaCha20Poly1305::new(Key::from_slice(key_bytes));
+    let plaintext = cipher
+        .decrypt(Nonce::from_slice(nonce_bytes), ciphertext)
+        .expect("decryption failed: wrong key or modified ciphertext");
+
+    String::from_utf8(plaintext).expect("decrypted data is not valid UTF-8")
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    let plaintext = if args.len() > 1 {
-        &args[1]
-    } else {
-        "This is a Very secret message!"
-    };
+    let plaintext = std::env::args()
+        .nth(1)
+        .unwrap_or_else(|| "This is a very secret message!".to_owned());
 
-    let key_pair = gen_key_pair();
-    println!("Generated key pair (URL_SAFE_NO_PAD): {}", &key_pair);
-    let key_bytes = URL_SAFE_NO_PAD.decode(&key_pair).expect("bad base64 key");
-    let mut key = [0u8; 32];
-    key.copy_from_slice(&key_bytes);
+    // Alice and Bob create independent X25519 key pairs.
+    let alice = generate_key_pair();
+    println!(
+        "Alice private key: {}; Alice public key: {}",
+        URL_SAFE_NO_PAD.encode(alice.private_key.to_bytes()),
+        URL_SAFE_NO_PAD.encode(alice.public_key.as_bytes())
+    );
+    let bob = generate_key_pair();
+    println!(
+        "Bob   private key: {}; Bob   public key: {}",
+        URL_SAFE_NO_PAD.encode(bob.private_key.to_bytes()),
+        URL_SAFE_NO_PAD.encode(bob.public_key.as_bytes())
+    );
 
-    // // openssl rand --hex  32  
-    // const KEY_HEX: &str = "3AF5f3d48ca94da0c57dd5062b86a0cd19f83cf48b566cee276f29a82c7f1537";
-    // // crate hex :  hex::decode("aabb")  or hex_to_bytes()
-    // //  32 bytes , 256-bit key :
-    // let key_vec = hex::decode(KEY_HEX).expect("bad hex str");
-    // let mut key = [0u8; 32];
-    // key.copy_from_slice(&key_vec);
+    // Only public keys are exchanged; both sides derive the same 32-byte secret.
+    let alice_shared_key = derive_shared_key(&alice.private_key, &bob.public_key);
+    let bob_shared_key = derive_shared_key(&bob.private_key, &alice.public_key);
+    assert_eq!(alice_shared_key, bob_shared_key);
 
-    let ciphertext = encrypt_string(plaintext, &key);
-    println!("Ciphertext: {}", &ciphertext); // Print the ciphertext (bytes) in b64
+    println!("Shared key length: {}\n", alice_shared_key.len());
 
+    let ciphertext = encrypt_string(&plaintext, &alice_shared_key);
+    println!("Ciphertext: {ciphertext}");
     println!("Plaintext length: {}; Ciphertext B64 length: {};", plaintext.len(), ciphertext.len());
 
-    let decrypted_text = decrypt_string(&ciphertext, &key);
+    let decrypted_text = decrypt_string(&ciphertext, &bob_shared_key);
+    println!("Decrypted text: {decrypted_text}");
 
-    println!("Decrypted text: {}", decrypted_text); // Print the decrypted string
-
-    assert_eq!(plaintext, decrypted_text); // Ensure that decryption worked correctly
+    assert_eq!(plaintext, decrypted_text);
 }
