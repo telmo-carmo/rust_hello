@@ -95,7 +95,7 @@ fn main() {
     let bob_shared_key = derive_shared_key(&bob.private_key, &alice.public_key);
     assert_eq!(alice_shared_key, bob_shared_key);
 
-    println!("Shared key length: {}\n", alice_shared_key.len());
+    println!("Shared key length: {} ; key= {}\n", alice_shared_key.len(), URL_SAFE_NO_PAD.encode(alice_shared_key));
 
     let ciphertext = encrypt_string(&plaintext, &alice_shared_key);
     println!("Ciphertext: {ciphertext}");
