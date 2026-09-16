@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::time::Instant; 
 use std::thread;
+use std::env;
 
 // Define the structure of the data you want to send
 #[derive(Serialize, Deserialize, Debug)]
@@ -62,15 +63,39 @@ fn do_post(ui: u32, vf : bool) -> Result<ReqInfo, ureq::Error> {
     Ok(ReqInfo{id: ui, status: r_status, usecs: r_usecs})
 }
 
-fn main() -> Result<(), ureq::Error> {
-    let vf = if std::env::args().len() > 1 {
-        true
-    } else {
-        false
-    };
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args: Vec<String> = env::args().skip(1).collect();
+
+    let mut vf = false;
+    let mut nt: u32 = 5;
+
+    let mut i = 0;
+    while i < args.len() {
+        match args[i].as_str() {
+            "-v" => {
+                vf = true;
+            }
+            "-n" => {
+                i += 1;
+
+                let value = args
+                    .get(i)
+                    .ok_or("-n requires an integer")?;
+
+                nt = value
+                        .parse::<u32>()
+                        .map_err(|_| "-n requires an integer")?;
+                
+            }
+            unknown => {
+                println!("unknown argument: {unknown}");
+            }
+        }
+        i += 1;
+    }
 
     let rv: Vec<ReqInfo> = thread::scope(|scope| {
-        let handles: Vec<_> = (0..5)
+        let handles: Vec<_> = (0..nt)
             .map(|i| scope.spawn(move || do_post(i,vf)))
             .collect();
 
