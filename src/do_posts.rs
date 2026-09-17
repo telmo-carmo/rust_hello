@@ -105,11 +105,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .collect::<Result<Vec<_>, _>>()
     })?;
 
-    let mut avg_ms = 0.0f32;
-    for ri in &rv  {
+    for ri in &rv {
         print!("Req ID: {}, Status: {}, Time taken (usecs): {}\n", ri.id, ri.status, ri.usecs);
-        avg_ms = ri.usecs as f32 / 1000.0;
     }
-    println!("Average time req taken: {} ms", avg_ms/(rv.len() as f32));
+    let avg_usecs = rv.iter().map(|ri| ri.usecs as f64).sum::<f64>() / rv.len() as f64;
+    println!("Average time req taken: {} ms", avg_usecs / 1000.0);
     Ok(())
 }
