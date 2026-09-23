@@ -29,6 +29,8 @@ fn main() {
     println!("Hello, RUST!");
     let args: Vec<String> = env::args().collect();
 
+    let tstart = std::time::Instant::now();
+
     // The first argument is the path that was used to call the program.
     println!("My exe path is {}.", args[0]);
 
@@ -85,4 +87,7 @@ fn main() {
     // Always flush the internal buffer to ensure all data is written
     wtr.flush().unwrap();
     println!("Data written to {}", output_fname);
+    let took = tstart.elapsed();
+    println!("Time taken: {:?}", took);
+    //let usecs : u128 = took.as_micros();
 }
