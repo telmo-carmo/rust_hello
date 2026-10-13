@@ -70,4 +70,8 @@ fn main() {
         println!("Remaining arguments: {:?}", remaining_args);
         println!("INPUT_1 = {}", remaining_args[0].to_str().unwrap());
     }
+
+    let s2 = "Olá Acção";
+    let s2_upper = s2.to_uppercase();
+    println!("s2 uppercase: {}", s2_upper);
 }

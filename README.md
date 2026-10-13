@@ -1,4 +1,4 @@
-Some Rust code examples
+## Some Rust code examples
 
 ```Rust
 
@@ -65,4 +65,3 @@ fn main() -> Result<(), XlsxError> {
 }
 
 ```
-
