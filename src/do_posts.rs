@@ -81,10 +81,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             "-n" => {
                 i += 1;
-
-                let value = args.get(i).ok_or("-n requires an integer")?;
-
-                nt = value.parse::<u32>().map_err(|_| "-n requires an integer")?;
+                let err_msg = "-n requires an integer";
+                let value = args.get(i).ok_or(err_msg)?;
+                nt = value.parse::<u32>().map_err(|_| err_msg)?;
             }
             unknown => {
                 println!("unknown argument: {unknown}");
