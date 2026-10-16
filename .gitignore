@@ -8,4 +8,6 @@ Cargo.lock
 
 .vscode/
 Cargo.lock
+.zed/
+
 

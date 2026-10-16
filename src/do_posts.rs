@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
-use std::time::Instant; 
-use std::thread;
 use std::env;
+use std::thread;
+use std::time::Instant;
 
 // Define the structure of the data you want to send
 #[derive(Serialize, Deserialize, Debug)]
@@ -23,12 +23,12 @@ struct Resp1 {
 }
 
 struct ReqInfo {
-    id : u32,
+    id: u32,
     status: u32,
     usecs: u64,
 }
 
-fn do_post(ui: u32, vf : bool) -> Result<ReqInfo, ureq::Error> {
+fn do_post(ui: u32, vf: bool) -> Result<ReqInfo, ureq::Error> {
     // Create the data payload
     let dts = chrono::Local::now()
         .format("%Y-%m-%d %H:%M:%S.%6f")
@@ -60,7 +60,11 @@ fn do_post(ui: u32, vf : bool) -> Result<ReqInfo, ureq::Error> {
         );
     }
 
-    Ok(ReqInfo{id: ui, status: r_status, usecs: r_usecs})
+    Ok(ReqInfo {
+        id: ui,
+        status: r_status,
+        usecs: r_usecs,
+    })
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -78,14 +82,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "-n" => {
                 i += 1;
 
-                let value = args
-                    .get(i)
-                    .ok_or("-n requires an integer")?;
+                let value = args.get(i).ok_or("-n requires an integer")?;
 
-                nt = value
-                        .parse::<u32>()
-                        .map_err(|_| "-n requires an integer")?;
-                
+                nt = value.parse::<u32>().map_err(|_| "-n requires an integer")?;
             }
             unknown => {
                 println!("unknown argument: {unknown}");
@@ -96,7 +95,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let rv: Vec<ReqInfo> = thread::scope(|scope| {
         let handles: Vec<_> = (0..nt)
-            .map(|i| scope.spawn(move || do_post(i,vf)))
+            .map(|i| scope.spawn(move || do_post(i, vf)))
             .collect();
 
         handles
@@ -106,7 +105,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     })?;
 
     rv.iter().for_each(|ri| {
-        print!("Req ID: {}, Status: {}, Time taken (usecs): {}\n", ri.id, ri.status, ri.usecs);
+        print!(
+            "Req ID: {}, Status: {}, Time taken (usecs): {}\n",
+            ri.id, ri.status, ri.usecs
+        );
     });
     let avg_usecs = rv.iter().map(|ri| ri.usecs as f64).sum::<f64>() / rv.len() as f64;
     println!("Average time req taken: {} ms", avg_usecs / 1000.0);
