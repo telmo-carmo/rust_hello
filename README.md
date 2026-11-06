@@ -1,4 +1,4 @@
-z## Some Rust code examples
+### Some Rust code examples
 
 ```Rust
 
@@ -65,6 +65,15 @@ fn main() -> Result<(), XlsxError> {
 }
 
 ```
+
+To use .http in ZED use:   npm install -g httpyac
+
+httpyac send -n test1 te1.http
+httpyac send --all te1.http
+
+npx httpyac send x.http --line 15
+
+---
 
 curl -f https://zed.dev/install.sh | ZED_VERSION=1.24.3 sh
 
