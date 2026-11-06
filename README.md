@@ -65,3 +65,6 @@ fn main() -> Result<(), XlsxError> {
 }
 
 ```
+
+curl -f https://zed.dev/install.sh | ZED_VERSION=1.24.3 sh
+
