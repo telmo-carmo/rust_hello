@@ -1,4 +1,4 @@
-## Some Rust code examples
+z## Some Rust code examples
 
 ```Rust
 
@@ -68,3 +68,4 @@ fn main() -> Result<(), XlsxError> {
 
 curl -f https://zed.dev/install.sh | ZED_VERSION=1.24.3 sh
 
+Latest Win ZED version is 1.27 on 06-11-2027
